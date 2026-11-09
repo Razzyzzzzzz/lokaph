@@ -39,5 +39,3 @@ lokalph/
 The built frontend is already in `public/assets`. To change it: `npm install`, then `npm run dev` (hot reload on :5173, proxies /api to :8000) or `npm run build`.
 For Apache, point DocumentRoot at `public/`; the app must run at the web root.
 
-## Demo logins
-admin@lokalph.test / Admin123! · owner@lokalph.test / Owner123! · customer@lokalph.test / Customer123!
