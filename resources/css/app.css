@@ -1,0 +1,7 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+@layer base { body { @apply bg-white text-navy antialiased pb-20 md:pb-6; } html { overflow-x: hidden; }
+  input, select, textarea { @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5; } input[type=checkbox], input[type=radio] { @apply w-auto; } }
+@layer components { .btn { @apply inline-block rounded-xl px-4 py-2.5 text-center text-sm font-semibold; } .btn-primary { @apply bg-brand text-white; } .btn-outline { @apply border; }
+  .card { @apply rounded-2xl border bg-white shadow-md; } .stat { @apply rounded-2xl border p-3 shadow-sm; } }
+.leaflet-container { z-index: 0; }
+.no-scrollbar { scrollbar-width: none; } .no-scrollbar::-webkit-scrollbar { display: none; }

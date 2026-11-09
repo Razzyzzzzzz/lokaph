@@ -1,0 +1,6 @@
+{
+  "name": "lokalph", "private": true, "type": "module",
+  "scripts": { "dev": "vite", "build": "vite build" },
+  "dependencies": { "leaflet": "^1.9.4", "lucide-vue-next": "^0.441.0", "vue": "^3.4.38", "vue-router": "^4.4.5" },
+  "devDependencies": { "@vitejs/plugin-vue": "^5.1.4", "autoprefixer": "^10.4.20", "postcss": "^8.4.47", "tailwindcss": "^3.4.13", "vite": "^5.4.8" }
+}
