@@ -1,4 +1,4 @@
-\<script setup>
+<script setup>
 import { reactive, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { User, Mail, Lock, Eye, EyeOff, MapPin, Heart, MessageCircle, ShieldCheck, Store, ArrowLeft } from 'lucide-vue-next'
@@ -9,9 +9,9 @@ import { store } from '@/store'
 const props = defineProps({ mode: String })
 const route = useRoute(), router = useRouter()
 const isLogin = computed(() => props.mode === 'login')
-const f = reactive({ name: '', email: '', password: '', confirm: '', role: 'customer' })
+const f = reactive({ name: '', email: '', password: '', confirm: '', role: route.query.role === 'owner' ? 'owner' : 'customer' })
 const touched = reactive({}), show = ref(false), busy = ref(false), serverError = ref('')
-const inputCls = 'h-12 !pl-10 focus:border-brand focus:outline-none focus:ring-2 focus:ring-green-200'
+const inputCls = 'h-12 !pl-10 focus:border-[#7c3aed] focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/25'
 
 const errors = computed(() => {
   const e = {}
@@ -32,8 +32,8 @@ const STRENGTH = [['Too weak', 'bg-red-500'], ['Weak', 'bg-orange-500'], ['Fair'
 const customerPerks = [[MapPin, 'Real distances', 'Know exactly how far each store is from you.'], [Heart, 'Save your favorites', 'Keep the shops and products you love in one place.'], [MessageCircle, 'Message sellers', 'Ask about stock and prices before you go.']]
 const ownerPerks = [[Store, 'List your business', 'Create your page, products, prices and hours.'], [MapPin, 'Get found nearby', 'Customers searching near you will see your store.'], [ShieldCheck, 'Verified listings', 'Admin-approved businesses build customer trust.']]
 const panel = computed(() => !isLogin.value && f.role === 'owner'
-  ? { title: 'Put your store in front of nearby customers.', perks: ownerPerks }
-  : { title: isLogin.value ? 'Welcome back to your neighborhood marketplace.' : 'Find what you need from stores near you.', perks: customerPerks })
+  ? { tag: 'Shop Local, Grow Together!', title: 'Put your store in front of nearby customers.', perks: ownerPerks }
+  : { tag: isLogin.value ? 'Welcome back, kabayan!' : 'Discover the Best of Local!', title: isLogin.value ? 'Welcome back to your neighborhood marketplace.' : 'Find what you need from stores near you.', perks: customerPerks })
 const year = new Date().getFullYear()
 
 async function submit() {
@@ -51,15 +51,16 @@ async function submit() {
 <template>
   <div class="grid min-h-screen bg-white lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
     <!-- Brand panel -->
-    <aside class="relative hidden overflow-hidden bg-gradient-to-br from-navy via-[#0d2b4f] to-emerald-900 p-12 text-white lg:flex lg:flex-col lg:justify-between">
-      <div class="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-green-500/20 blur-3xl"></div>
-      <div class="pointer-events-none absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-emerald-400/10 blur-3xl"></div>
-      <p class="relative text-xs font-semibold uppercase tracking-[0.2em] text-green-300">Philippine small business finder</p>
+    <aside class="relative hidden overflow-hidden bg-gradient-to-br from-[#0b1f3a] via-[#12307a] to-[#0b1f3a] p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <div class="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#7c3aed]/30 blur-3xl"></div>
+      <div class="pointer-events-none absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-[#7c3aed]/15 blur-3xl"></div>
+      <p class="relative text-xs font-semibold uppercase tracking-[0.2em] text-[#fbbf24]">Philippine small business finder</p>
       <div class="relative max-w-lg">
-        <h2 class="text-4xl font-extrabold leading-tight">{{ panel.title }}</h2>
+        <p class="text-3xl text-[#fbbf24]" style="font-family: 'Kaushan Script', cursive">{{ panel.tag }}</p>
+        <h2 class="mt-2 text-4xl font-extrabold leading-tight">{{ panel.title }}</h2>
         <ul class="mt-10 space-y-6">
           <li v-for="[icon, t, d] in panel.perks" :key="t" class="flex gap-4">
-            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20"><component :is="icon" :size="20" class="text-green-300" /></span>
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20"><component :is="icon" :size="20" class="text-[#fbbf24]" /></span>
             <span><b class="block">{{ t }}</b><span class="text-sm text-slate-300">{{ d }}</span></span>
           </li>
         </ul>
@@ -68,13 +69,22 @@ async function submit() {
     </aside>
 
     <!-- Form -->
-    <main class="flex flex-col px-6 py-8 sm:px-10">
-      <div class="flex items-center justify-between">
+    <main class="flex flex-col lg:px-10 lg:py-8">
+      <!-- Mobile brand band: replaces the hidden left panel so the page matches the landing header -->
+      <div class="relative overflow-hidden bg-gradient-to-r from-[#0b1f3a] to-[#12307a] px-4 py-3 text-white shadow-lg lg:hidden">
+        <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#7c3aed]/30 blur-2xl"></div>
+        <div class="relative flex items-center justify-between">
+          <RouterLink to="/" class="select-none" aria-label="LokalPH home"><BrandLogo size="h-10" tagline /></RouterLink>
+          <RouterLink to="/" class="flex items-center gap-1 text-sm font-medium text-white/80"><ArrowLeft :size="16" /> Back</RouterLink>
+        </div>
+        <p class="relative mt-2 text-xl text-[#fbbf24]" style="font-family: 'Kaushan Script', cursive">{{ panel.tag }}</p>
+      </div>
+      <div class="hidden items-center justify-between lg:flex">
         <RouterLink to="/" class="flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy"><ArrowLeft :size="16" /> Back to LokalPH</RouterLink>
       </div>
 
-      <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-8">
-        <div class="mb-6 select-none"><BrandLogo size="h-16" /></div>
+      <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-8 sm:px-10 lg:px-0">
+        <div class="mb-6 hidden select-none lg:block"><BrandLogo size="h-16" /></div>
         <h1 class="text-3xl font-extrabold tracking-tight">{{ isLogin ? 'Log in' : 'Create your account' }}</h1>
         <p class="mb-6 mt-1 text-slate-500">{{ isLogin ? 'Welcome back! Enter your details to continue.' : 'Join LokalPH in less than a minute.' }}</p>
 
@@ -112,12 +122,12 @@ async function submit() {
               <input v-model="f.confirm" :type="show ? 'text' : 'password'" autocomplete="new-password" placeholder="••••••••" :class="[inputCls, err('confirm') && '!border-red-500']" :aria-invalid="!!err('confirm')" @blur="touched.confirm = true"></span>
             <span v-if="err('confirm')" class="text-xs font-normal text-red-600">{{ errors.confirm }}</span></label>
 
-          <button class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand font-semibold text-white shadow-sm transition hover:bg-green-700 disabled:opacity-60" :disabled="busy">
+          <button class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#7c3aed] font-semibold text-white shadow-sm transition hover:bg-[#6d28d9] disabled:opacity-60" :disabled="busy">
             <span v-if="busy" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>{{ busy ? (isLogin ? 'Logging in…' : 'Creating account…') : isLogin ? 'Log in' : 'Create account' }}</button>
         </form>
 
         <p class="mt-6 text-center text-sm text-slate-600">{{ isLogin ? "Don't have an account?" : 'Already have an account?' }}
-          <RouterLink :to="{ path: isLogin ? '/register' : '/login', query: route.query }" class="font-semibold text-brand hover:underline">{{ isLogin ? 'Sign up' : 'Log in' }}</RouterLink></p>
+          <RouterLink :to="{ path: isLogin ? '/register' : '/login', query: route.query }" class="font-semibold text-[#7c3aed] hover:underline">{{ isLogin ? 'Sign up' : 'Log in' }}</RouterLink></p>
         <p class="mt-4 flex items-center justify-center gap-1.5 text-xs text-slate-400"><ShieldCheck :size="14" /> Passwords are securely hashed and never stored in plain text.</p>
       </div>
     </main>

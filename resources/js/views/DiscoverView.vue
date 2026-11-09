@@ -50,6 +50,8 @@ const chips = computed(() => [
 const remove = (k) => { f[k] = k === 'open' ? false : '' }
 const reset = () => Object.assign(f, { q: '', category: '', city: '', radius: '', open: false, sort: '', max_price: '' })
 const setCat = (id) => { f.category = String(f.category) === String(id) ? '' : id }
+// No results (and not loading/failed): the map is still useful, so it stays visible on mobile too.
+const empty = computed(() => !loading.value && !error.value && !list.value.length)
 const filterCount = computed(() => chips.value.filter((c) => !['q', 'category'].includes(c.k)).length)
 </script>
 <template>
@@ -105,7 +107,7 @@ const filterCount = computed(() => chips.value.filter((c) => !['q', 'category'].
           <button v-if="list.length < total" class="btn btn-outline mt-2" :disabled="loadingMore" @click="load(true)">{{ loadingMore ? 'Loading…' : 'Load more' }}</button>
         </div>
       </div>
-      <div :class="view === 'list' && 'hidden lg:block'"><MapView :businesses="list" :loc="store.loc" :active-id="active" @select="select" /></div>
+      <div :class="[view === 'list' && !empty && 'hidden lg:block', empty && 'order-first lg:order-none']"><MapView :businesses="list" :loc="store.loc" :active-id="active" :compact="empty" @select="select" /></div>
     </div>
   </section>
 </template>
