@@ -18,5 +18,12 @@ class AuthController {
     $u = q('SELECT u.id,u.name,u.email,r.name role FROM users u JOIN roles r ON r.id=u.role_id WHERE u.id=?', [$id])->fetch();
     $_SESSION['user'] = $u; Audit::log($action, 'user', (int)$id, null, (int)$id); $_SESSION['csrf'] = bin2hex(random_bytes(16)); out(['user' => $u, 'csrf' => $_SESSION['csrf']]);
   }
-  function logout() { Audit::log('logout'); session_destroy(); out(['ok' => 1]); }
+  function logout() {
+    $u = $_SESSION['user'] ?? null;
+    try { if ($u) Audit::log('logout', 'user', (int)$u['id'], null, (int)$u['id']); }
+    catch (Throwable $e) { error_log('Audit logout failed: ' . $e->getMessage()); } // never block logout
+    $_SESSION = [];
+    if (session_status() === PHP_SESSION_ACTIVE) session_destroy();
+    out(['ok' => 1]);
+  }
 }

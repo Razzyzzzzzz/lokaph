@@ -23,9 +23,15 @@ class MessageController {
   }
   function unread() {
     $u = Auth::need();
-    $n = $u['role'] === 'owner' ? q('SELECT COALESCE(SUM(i.unread_owner),0) FROM inquiries i JOIN businesses b ON b.id=i.business_id WHERE b.owner_id=?', [$u['id']])
-                                : q('SELECT COALESCE(SUM(unread_customer),0) FROM inquiries WHERE user_id=?', [$u['id']]);
-    out(['count' => (int)$n->fetchColumn()]);
+    try {
+      $n = $u['role'] === 'owner' ? q('SELECT COALESCE(SUM(i.unread_owner),0) FROM inquiries i JOIN businesses b ON b.id=i.business_id WHERE b.owner_id=?', [$u['id']])
+                                  : q('SELECT COALESCE(SUM(unread_customer),0) FROM inquiries WHERE user_id=?', [$u['id']]);
+      $count = (int)$n->fetchColumn();
+    } catch (Throwable $e) {
+      error_log('messages/unread failed: ' . $e->getMessage()); // missing column/table: don't break the site
+      $count = 0;
+    }
+    out(['count' => $count]);
   }
   function show($id) {
     [$u, $t, $side] = $this->thread($id);

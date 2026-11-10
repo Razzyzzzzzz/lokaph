@@ -8,16 +8,19 @@ const key = (l) => l.lat.toFixed(4) + ',' + l.lng.toFixed(4)
 export const store = reactive({
   user: null, cats: { business: [], product: [] }, favs: { businesses: [], products: [] },
   loc: JSON.parse(localStorage.getItem('loc') || 'null'), recent: JSON.parse(localStorage.getItem('recentLocs') || '[]'),
-  locOpen: false, toast: null, modal: null,
+  locOpen: false, toast: null, modal: null, unread: 0,
 
   async init() {
-    try { const m = await api('/me'); session.csrf = m.csrf; this.user = m.user; this.cats = await api('/categories'); await this.loadFavs() }
+    try { const m = await api('/me'); session.csrf = m.csrf; this.user = m.user; this.cats = await api('/categories'); await this.loadFavs(); setInterval(() => this.user && this.loadUnread(), 30000) }
     catch (e) { this.flash('Cannot reach the server: ' + e.message, true) }
   },
   flash(m, bad = false) { this.toast = { m, bad }; setTimeout(() => (this.toast = null), 3200) },
-  async loadFavs() { if (this.user) this.favs = await api('/favorites') },
+  async loadFavs() { if (this.user) { this.favs = await api('/favorites'); this.loadUnread() } },
+  async loadUnread() { try { this.unread = (await api('/messages/unread')).count } catch { /* ignore */ } },
+  /** Fire-and-forget analytics event (directions / call). */
+  track(business_id, event) { api('/track', 'POST', { business_id, event }).catch(() => {}) },
   setSession(r) { this.user = r.user; session.csrf = r.csrf },
-  async logout() { await api('/logout', 'POST'); const m = await api('/me'); this.user = null; session.csrf = m.csrf; this.favs = { businesses: [], products: [] } },
+  async logout() { await api('/logout', 'POST'); const m = await api('/me'); this.user = null; session.csrf = m.csrf; this.favs = { businesses: [], products: [] }; this.unread = 0 },
   setLoc(l) {
     this.loc = { lat: l.lat, lng: l.lng, label: l.label }; localStorage.setItem('loc', JSON.stringify(this.loc)); this.locOpen = false
     this.recent = [this.loc, ...this.recent.filter((r) => key(r) !== key(this.loc))].slice(0, 5); localStorage.setItem('recentLocs', JSON.stringify(this.recent))

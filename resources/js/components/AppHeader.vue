@@ -4,6 +4,7 @@ import Icon from './Icon.vue'
 import { store } from '@/store'
 import { useRouter } from 'vue-router'
 const router = useRouter()
+const CONTACT_EMAIL = 'Test1@gmail.com' // palitan ng support email mo
 const logout = async () => { await store.logout(); router.push('/') }
 const link = 'flex items-center gap-1.5 border-b-2 border-transparent py-1 hover:text-[#fbbf24]'
 const closeMenu = (e) => e.currentTarget.blur() // closes the Categories dropdown after a pick
@@ -30,7 +31,7 @@ const closeMenu = (e) => e.currentTarget.blur() // closes the Categories dropdow
         <RouterLink to="/products" :class="link" active-class="!border-[#7c3aed]"><Icon name="bag" /> Products</RouterLink>
         <RouterLink v-if="store.user?.role === 'owner'" to="/owner" :class="link" active-class="!border-[#7c3aed]"><Icon name="briefcase" /> My Business</RouterLink>
         <RouterLink to="/about" :class="link" active-class="!border-[#7c3aed]"><Icon name="info" /> About</RouterLink>
-        <a href="#footer" :class="link"><Icon name="mail" /> Contact</a>
+        <a :href="'mailto:' + CONTACT_EMAIL" :class="link"><Icon name="mail" /> Contact</a>
         <RouterLink v-if="store.user" to="/account" :class="link"><Icon name="heart" /> Saved</RouterLink>
         <RouterLink v-if="store.user?.role === 'admin'" to="/admin" :class="link">Admin</RouterLink>
       </nav>
