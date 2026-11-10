@@ -1,7 +1,7 @@
 <?php
 $cfg = require __DIR__ . '/../../config/config.php';
 if (PHP_SAPI !== 'cli') session_start();
-spl_autoload_register(function ($c) { foreach (['Controllers', 'Models', 'Middleware'] as $d) { $f = __DIR__ . "/../$d/$c.php"; if (is_file($f)) return require $f; } });
+spl_autoload_register(function ($c) { foreach (['Controllers', 'Models', 'Middleware', 'Services'] as $d) { $f = __DIR__ . "/../$d/$c.php"; if (is_file($f)) return require $f; } });
 function db(): PDO { static $p; global $cfg;
   if (!$p) { $p = new PDO("mysql:host={$cfg['host']};dbname={$cfg['db']};charset=utf8mb4", $cfg['user'], $cfg['pass'],
     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_EMULATE_PREPARES => true]); $p->exec("SET time_zone='+08:00'"); }

@@ -11,3 +11,10 @@ $p('/owner/products/{id}/delete', 'OwnerController@deleteProduct'); $p('/owner/u
 $g('/admin/stats', 'AdminController@stats'); $g('/admin/businesses', 'AdminController@businesses'); $p('/admin/businesses/{id}', 'AdminController@act');
 $g('/admin/users', 'AdminController@users'); $p('/admin/users/{id}/toggle', 'AdminController@toggleUser');
 $g('/admin/reports', 'AdminController@reports'); $p('/admin/categories', 'AdminController@addCategory'); $p('/admin/products/{id}/delete', 'AdminController@deleteProduct');
+$p('/owner/verification', 'OwnerController@requestVerification');
+$g('/admin/verifications', 'AdminController@verifications'); $g('/admin/verifications/{id}/document', 'AdminController@document'); $p('/admin/verifications/{id}/review', 'AdminController@reviewVerification');
+$g('/admin/products', 'AdminController@products'); $p('/admin/products/{id}/review', 'AdminController@reviewProduct'); $g('/admin/audit', 'AdminController@audit');
+$p('/track', 'PublicController@track');
+$g('/messages', 'MessageController@index'); $g('/messages/unread', 'MessageController@unread'); $g('/messages/{id}', 'MessageController@show'); $p('/messages/{id}/reply', 'MessageController@reply');
+$g('/owner/analytics', 'OwnerController@analytics'); $g('/owner/report', 'OwnerController@report');
+$g('/admin/analytics', 'AdminController@analytics'); $g('/admin/report', 'AdminController@report');

@@ -10,7 +10,7 @@ const form = ref(null)
 const add = () => (form.value = { name: '', category_id: store.cats.product[0]?.id, price: '', stock: 0, description: '', available: true, image: '' })
 const edit = (p) => (form.value = { ...p, available: !!+p.available, image: '' })
 const guard = async (fn) => { try { await fn(); emit('changed') } catch (e) { store.flash(e.message, true) } }
-const save = () => guard(async () => { await api('/owner/products', 'POST', form.value); form.value = null; store.flash('Product saved.') })
+const save = () => guard(async () => { await api('/owner/products', 'POST', form.value); form.value = null; store.flash('Product saved. New or changed listings are reviewed before they go live.') })
 const del = (id) => confirm('Delete this product?') && guard(() => api(`/owner/products/${id}/delete`, 'POST'))
 async function upload(e) { const fd = new FormData(); fd.append('file', e.target.files[0])
   try { form.value.image = (await api('/owner/upload', 'POST', fd)).url; store.flash('Image uploaded.') } catch (err) { store.flash(err.message, true) } }
@@ -25,7 +25,7 @@ async function upload(e) { const fd = new FormData(); fd.append('file', e.target
       <label class="mt-5 flex items-center gap-2"><input v-model="form.available" type="checkbox">Available for sale</label>
       <div class="flex gap-2 md:col-span-2"><button class="btn btn-primary">Save product</button><button type="button" class="btn btn-outline" @click="form = null">Cancel</button></div></form>
     <div v-for="p in products" :key="p.id" class="flex items-center gap-3 rounded-2xl border p-3 text-sm"><div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl"><PhImg :src="p.image" :name="p.name" /></div>
-      <div class="flex-1"><b>{{ p.name }}</b><p>{{ peso(p.price) }} · stock {{ p.stock }} · {{ +p.available ? 'available' : 'hidden' }}</p></div>
+      <div class="flex-1"><b>{{ p.name }}</b> <span v-if="p.status !== 'approved'" class="rounded-full px-2 text-xs" :class="p.status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700'">{{ p.status === 'pending' ? 'Awaiting approval' : 'Rejected' }}</span><p v-if="p.status === 'rejected' && p.review_note" class="text-xs text-red-600">Reason: {{ p.review_note }}</p><p>{{ peso(p.price) }} · stock {{ p.stock }} · {{ +p.available ? 'available' : 'hidden' }}</p></div>
       <button class="underline" @click="edit(p)">Edit</button><button class="text-red-600 underline" @click="del(p.id)">Delete</button></div>
   </div>
 </template>

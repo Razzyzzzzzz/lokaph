@@ -3,7 +3,7 @@ class Product {
   static function search($f) {
     $has = is_numeric($f['lat'] ?? null) && is_numeric($f['lng'] ?? null); $p = []; $d = 'NULL';
     if ($has) { $d = Business::distSql(); $p[':lat'] = (float)$f['lat']; $p[':lng'] = (float)$f['lng']; }
-    $w = ["b.status='approved'"];
+    $w = ["b.status='approved'", "p.status='approved'"];
     if (!empty($f['id'])) { $w[] = 'p.id=:id'; $p[':id'] = (int)$f['id']; }
     if (!empty($f['business_id'])) { $w[] = 'p.business_id=:bid'; $p[':bid'] = (int)$f['business_id']; }
     if (!empty($f['category'])) { $w[] = 'p.category_id=:cat'; $p[':cat'] = (int)$f['category']; }

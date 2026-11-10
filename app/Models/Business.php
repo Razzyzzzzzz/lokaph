@@ -7,7 +7,7 @@ class Business {
     $in = "SELECT b.id,b.name,b.description,b.phone,b.facebook,b.logo,b.cover,b.featured,b.verified,b.is_sample,b.created_at,c.id category_id,c.name category,
       l.address,l.city,l.province,l.lat,l.lng,$d distance,
       (SELECT ROUND(AVG(rating),1) FROM reviews WHERE business_id=b.id) rating,(SELECT COUNT(*) FROM reviews WHERE business_id=b.id) reviews,
-      (SELECT COUNT(*) FROM products WHERE business_id=b.id) products,(SELECT MIN(price) FROM products WHERE business_id=b.id) min_price,
+      (SELECT COUNT(*) FROM products WHERE business_id=b.id AND status='approved') products,(SELECT MIN(price) FROM products WHERE business_id=b.id AND status='approved') min_price,
       EXISTS(SELECT 1 FROM business_hours h WHERE h.business_id=b.id AND h.day=WEEKDAY(NOW()) AND h.is_closed=0 AND CURTIME() BETWEEN h.opens AND h.closes) is_open
       FROM businesses b JOIN business_locations l ON l.business_id=b.id JOIN business_categories c ON c.id=b.category_id WHERE b.status='approved'";
     if (!empty($f['id'])) { $in .= ' AND b.id=:id'; $p[':id'] = (int)$f['id']; }
